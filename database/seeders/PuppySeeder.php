@@ -27,16 +27,15 @@ class PuppySeeder extends Seeder
             ['name' => 'Frisket', 'trait' => 'Mother of all pups', 'image' => '1.jpg'],
         ];
 
-        $user = User::first();
+        $simon = User::first();
 
         foreach ($puppies as $puppy) {
             Puppy::create([
-                'user_id' => $user->id,
+                'user_id' => $simon->id,
                 'name' => $puppy['name'],
                 'trait' => $puppy['trait'],
                 'image_url' => Storage::url('puppies/' . $puppy['image']),
             ]);
         }
-        
     }
 }

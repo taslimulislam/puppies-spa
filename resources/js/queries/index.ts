@@ -1,39 +1,38 @@
-import { Puppy } from '@/types';
+import { Puppy } from '../types';
 
-async function parseJson<T>(response: Response): Promise<T> {
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw errorData;
-    }
-
-    return response.json() as Promise<T>;
-}
-
-export async function toggleLikeStatus(id: Puppy['id']): Promise<Puppy> {
-    const response = await fetch(`/api/puppies/${id}/like`, {
+// ------------------------------
+// Add/remove from shortlist
+// ------------------------------
+export async function toggleLikedStatus(id: Puppy['id']) {
+    const response = await fetch(`http://react-backend.test/api/puppies/${id}/like`, {
         method: 'PATCH',
         headers: {
             Accept: 'application/json',
         },
     });
-
-    return parseJson<Puppy>(response);
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw errorData;
+    }
+    const { data } = await response.json();
+    return data;
 }
 
-export async function createPuppy(
-    formData: FormData,
-): Promise<Puppy | Record<string, unknown>> {
-    const response = await fetch('/api/puppies', {
+// ------------------------------
+// Add a new puppy
+// ------------------------------
+export async function createPuppy(formData: FormData) {
+    const response = await fetch('http://react-backend.test/api/puppies', {
         method: 'POST',
+        body: formData,
         headers: {
             Accept: 'application/json',
         },
-        body: formData,
     });
-
     if (!response.ok) {
-        return response.json();
+        const errorData = await response.json();
+        throw errorData;
     }
-
-    return parseJson<Puppy>(response);
+    const data = await response.json();
+    return data;
 }

@@ -1,42 +1,38 @@
-import { useState } from 'react';
-import { Container } from '@/Components/Container';
-import { Header } from '@/Components/Header';
-import { NewPuppyForm } from '@/Components/NewPuppyForm';
-import { PageWraper } from '@/Components/PageWraper';
-import { PuppiesList } from '@/Components/PuppiesList';
-import { Search } from '@/Components/Search';
-import { Shortlist } from '@/Components/ShortList';
-import { Puppy } from '@/types';
+import { Container } from '@/components/Container';
+import { Header } from '@/components/Header';
+import { NewPuppyForm } from '@/components/NewPuppyForm';
+import { PageWrapper } from '@/components/PageWrapper';
+import { PuppiesList } from '@/components/PuppiesList';
+import { Search } from '@/components/Search';
+import { Shortlist } from '@/components/Shortlist';
 
-export default function Welcome({ puppies }: { puppies: Puppy[] }) {
+import { Puppy, SharedData } from '@/types';
+import { usePage } from '@inertiajs/react';
+import { useState } from 'react';
+
+export default function App({ puppies }: { puppies: Puppy[] }) {
     return (
-        <PageWraper>
+        <PageWrapper>
             <Container>
                 <Header />
                 <Main pups={puppies} />
             </Container>
-        </PageWraper>
+        </PageWrapper>
     );
 }
 
 function Main({ pups }: { pups: Puppy[] }) {
-    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [puppies, setPuppies] = useState<Puppy[]>(pups);
+    const { auth } = usePage<SharedData>().props;
 
     return (
         <main>
             <div className="mt-24 grid gap-8 sm:grid-cols-2">
-                <Search
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                />
-                <Shortlist puppies={puppies} setPuppies={setPuppies} />
+                <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                {auth.user && <Shortlist puppies={puppies} setPuppies={setPuppies} />}
             </div>
-            <PuppiesList
-                searchQuery={searchQuery}
-                puppies={puppies}
-                setPuppies={setPuppies}
-            />
+            <PuppiesList puppies={puppies} setPuppies={setPuppies} searchQuery={searchQuery} />
             <NewPuppyForm puppies={puppies} setPuppies={setPuppies} />
         </main>
     );
