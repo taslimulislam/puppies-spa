@@ -7,6 +7,7 @@ export function Header() {
     return (
         <header>
             {/* Logo */}
+            {/* <pre >{JSON.stringify(auth, null, 2)}</pre> */}
             <div className="flex items-center justify-between">
                 <a className="group" href="/">
                     <div className="inline-flex items-center gap-4">
