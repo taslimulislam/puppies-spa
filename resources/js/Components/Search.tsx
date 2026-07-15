@@ -1,14 +1,11 @@
+import { Filters } from "@/types";
+import { router } from "@inertiajs/react";
 import { Delete } from "lucide-react";
-import { Dispatch, SetStateAction, useRef } from "react";
+import { useRef } from "react";
+import { debounce } from "lodash-es";
 
-export function Search({
-  searchQuery,
-  setSearchQuery,
-}: {
-  searchQuery: string;
-  setSearchQuery: Dispatch<SetStateAction<string>>;
-}) {
-  const inputRef = useRef(null);
+export function Search({filters}: {filters: Filters}) {
+  const inputRef = useRef<HTMLInputElement>(null);
   return (
     <div>
       <label htmlFor="search" className="font-medium">
@@ -16,9 +13,17 @@ export function Search({
       </label>
       <div className="mt-2 flex items-center gap-4">
         <input
+          defaultValue={filters.search}
           ref={inputRef}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={debounce((e) => {
+            router.get(route('home'),
+              { search: e.target.value },
+              {
+                preserveState: true,
+                preserveScroll: true,
+              }
+            );
+          }, 300)}
           placeholder="playful..."
           name="search"
           id="search"
@@ -27,8 +32,18 @@ export function Search({
         />
         <button
           onClick={() => {
-            setSearchQuery("");
-            inputRef.current.focus();
+            router.get(route('home'),
+              {},
+              {
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: () => {
+
+                  inputRef.current!.value = '';
+                  inputRef.current?.focus();
+                },
+              }
+            );
           }}
           className="inline-block rounded bg-cyan-300 px-4 py-2 !pr-3 !pl-2.5 font-medium text-cyan-900 hover:bg-cyan-200 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
         >
