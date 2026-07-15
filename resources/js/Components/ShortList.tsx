@@ -1,16 +1,9 @@
-import { Dispatch, SetStateAction, useState } from "react";
 import { Puppy, SharedData } from "../types";
 import { Heart, LoaderCircle, X } from "lucide-react";
-import { toggleLikedStatus } from "../queries";
-import { usePage } from "@inertiajs/react";
+import { router, useForm, usePage } from "@inertiajs/react";
 
-export function Shortlist({
-  puppies,
-  setPuppies,
-}: {
-  puppies: Puppy[];
-  setPuppies: Dispatch<SetStateAction<Puppy[]>>;
-}) {
+export function Shortlist({ puppies }: { puppies: Puppy[] }) {
+
   const { auth } = usePage<SharedData>().props;
   return (
     <div>
@@ -34,7 +27,7 @@ export function Shortlist({
                 src={puppy.imageUrl}
               />
               <p className="px-3 text-sm text-slate-800">{puppy.name}</p>
-              <DeleteButton id={puppy.id} setPuppies={setPuppies} />
+              <DeleteButton id={puppy.id}/>
             </li>
           ))}
       </ul>
@@ -42,34 +35,37 @@ export function Shortlist({
   );
 }
 
-function DeleteButton({
-  id,
-  setPuppies,
-}: {
-  id: Puppy["id"];
-  setPuppies: Dispatch<SetStateAction<Puppy[]>>;
-}) {
-  const [pending, setPending] = useState(false);
+function DeleteButton({ id }: { id: Puppy["id"] }) {
+
+  const { processing, patch} = useForm();
   return (
-    <button
-      onClick={async () => {
-        setPending(true);
-        const updatedPuppy = await toggleLikedStatus(id);
-        setPuppies((prevPups) => {
-          return prevPups.map((existingPuppy) =>
-            existingPuppy.id === updatedPuppy.id ? updatedPuppy : existingPuppy,
-          );
+    <form className="h-full"
+      onSubmit = {(e) => {
+        e.preventDefault();
+        patch(route('puppies.like', id), {
+          preserveScroll: true,
         });
-        setPending(false);
       }}
-      className="group h-full border-l border-slate-100 px-2 hover:bg-slate-100"
-      disabled={pending}
     >
-      {pending ? (
-        <LoaderCircle className="size-4 animate-spin stroke-slate-300" />
-      ) : (
-        <X className="size-4 stroke-slate-400 group-hover:stroke-red-400" />
-      )}
-    </button>
+      <button
+        //Alternet way to update liked status without using useForm hook
+        //Here we also can use Link inertia which is aleady used in LikeToggle component
+
+        // onClick={() => router.patch(
+        //   route("puppies.like", id),
+        //   {},
+        // {
+        //   preserveScroll: true,
+        // })}
+        className="group h-full border-l border-slate-100 px-2 hover:bg-slate-100"
+        disabled={processing}
+      >
+        {processing ? (
+          <LoaderCircle className="size-4 animate-spin stroke-slate-300" />
+        ) : (
+          <X className="size-4 stroke-slate-400 group-hover:stroke-red-400" />
+        )}
+      </button>
+    </form>
   );
 }
