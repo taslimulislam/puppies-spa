@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Puppy extends Model
 {
+    protected $fillable = [
+        'name',
+        'trait',
+        'image_url',
+    ]; 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
