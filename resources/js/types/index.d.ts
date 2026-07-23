@@ -32,6 +32,7 @@ export interface SharedData {
         success?: string;
         warning?: string;
         info?: string;
+        error?: string;
     };
     [key: string]: unknown;
 }
@@ -54,6 +55,9 @@ export interface Puppy {
     imageUrl: string;
     user: Pick<User, 'id' | 'name'>;
     likedBy: User['id'][];
+    can: {
+        delete: boolean;
+    }
 }
 
 export interface Filters {
