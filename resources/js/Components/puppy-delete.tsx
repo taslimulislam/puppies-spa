@@ -1,4 +1,4 @@
-import { TrashIcon } from 'lucide-react';
+import { LoaderCircle, TrashIcon } from 'lucide-react';
 
 import {
     AlertDialog,
@@ -14,12 +14,16 @@ import {
 import { Button } from '@/components/ui/button';
 import { Puppy } from '@/types';
 import { useForm } from '@inertiajs/react';
+import { useState } from 'react';
+import clsx from 'clsx';
+
 
 export function PuppyDelete({ puppy }: { puppy: Puppy }) {
+    const [open, setOpen] = useState(false);
     const { processing, delete: destroy } = useForm();
     return (
         <div>
-            <AlertDialog>
+            <AlertDialog open={open} onOpenChange={setOpen}>
                 <AlertDialogTrigger asChild>
                     <Button className="group/delete bg-background/30 hover:bg-background" size="icon" variant="secondary" aria-label="Delete puppy">
                         <TrashIcon className="size-4 group-hover/delete:stroke-destructive" />
@@ -40,8 +44,14 @@ export function PuppyDelete({ puppy }: { puppy: Puppy }) {
                                 });
                             }}
                         >
-                            {' '}
-                            <AlertDialogAction type="submit">Delete {puppy.name}</AlertDialogAction>
+                            <Button className="relative disabled:opacity-100" type="submit" disabled={processing}>
+                               {processing && (
+                                    <div className="absolute inset-0 grid place-items-center">
+                                        <LoaderCircle className="size-5 animate-spin stroke-primary-foreground" />
+                                    </div>
+                                )}
+                                <span className={clsx(processing && 'invisible')}>Delete {puppy.name}</span>
+                            </Button>
                         </form>
                     </AlertDialogFooter>
                 </AlertDialogContent>
